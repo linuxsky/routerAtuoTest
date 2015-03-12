@@ -19,7 +19,7 @@ def uart_test():
 if __name__ == '__main__':
     print("1--- test uart port")
     ret = uart_test()
-    assert(ret != 0)
+    assert(ret == 0)
     print("finish test uart")
 
     print("======  auto test done  =======")
