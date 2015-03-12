@@ -3,20 +3,23 @@ __author__ = 'shiyang'
 
 import ConfigParser
 
-import UT_serial
-
+#import SerialUT   使用这个时需要加上模块的限定，否则报错 例如: SerialUT.SerialUI(0.0)
+from SerialUT import *
 
 CONFIG_FILE = "config.conf"
 
 def uart_test():
-    print "main entry"
     cf = ConfigParser.ConfigParser()
     cf.read(CONFIG_FILE)
     uart_name = cf.get("serial","SER_NAME")
     uart_batrate = cf.getint("serial","SER_BARATE")
-    print uart_name
-    print uart_batrate
-    UT_serial.Test_serial_main(uart_name,uart_batrate)
+    ret = SerialUT(uart_name,uart_batrate).SerOpen()
+    return ret
 
 if __name__ == '__main__':
-    uart_test()
+    print("1--- test uart port")
+    ret = uart_test()
+    assert(ret != 0)
+    print("finish test uart")
+
+    print("======  auto test done  =======")
