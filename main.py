@@ -53,6 +53,18 @@ def ssh_connet(ip,username,passwd):
     cmd = ['ps']
     return ssh2(ip,username,passwd,cmd)
 
+def dhcp_check():
+    cf = ConfigParser.ConfigParser()
+    cf.read(CONFIG_FILE)
+    ifname = cf.get("dhcp","IFNAME")
+    conf.checkIPaddr = False
+    conf.iface=ifname
+
+    fam,hw =get_if_raw_hwaddr(conf.iface)
+    dhcp_discover = Ether(dst="ff:ff:ff:ff:ff:ff",src=hw)/IP(src="0.0.0.0",dst="255.255.255.255")/UDP(sport=68,dport=67)/BOOTP(chaddr=hw)/DHCP(options=[("message-type","discover"),"end"])
+    ans, unans = srp(dhcp_discover, multi=False)
+    for p in ans : print p[1][IP].src
+
 if __name__ == '__main__':
     print("\033[41;36m|== test uart port ==|\033[0m")
     uart_test()
@@ -71,5 +83,8 @@ if __name__ == '__main__':
     if(ret == 0):
         ret = ssh_connet(sship,username,passwd)
     assert(ret == 0)
+
+    print("\033[41;36m|== test DHCP server ==|\033[0m")
+    dhcp_check();
 
     print("\033[41;36m|== router auto test done ==|\033[0m")
