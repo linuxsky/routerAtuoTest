@@ -7,9 +7,23 @@ class SerialUT:
     def __init__(self,name,speed):
         self.SerName=name
         self.SerSpeed=speed
+        self.com=None
     def SerOpen(self):
         try:
             tempSer = serial.Serial( self.SerName, self.SerSpeed ,timeout=2)
-            return tempSer.isOpen()
+            status = tempSer.isOpen()
+            if (status == True):
+                self.com=tempSer
+                return True
+            return False
         except:
-            return 1;
+            return False;
+    def SerClose(self):
+        if(self.com != None):
+            try:
+                self.com.close();
+            except:
+                print("Close uart failed")
+        return
+    
+

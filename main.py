@@ -16,8 +16,11 @@ def uart_test():
     cf.read(CONFIG_FILE)
     uart_name = cf.get("serial","SER_NAME")
     uart_batrate = cf.getint("serial","SER_BARATE")
-    ret = SerialUT(uart_name,uart_batrate).SerOpen()
-    assert(ret == 0)
+    uart = SerialUT(uart_name,int(uart_batrate))
+    ret = uart.SerOpen()
+    if(ret == True):
+        uart.SerClose()
+    assert(ret == True)
 
 def arp_icmp_ping():
     ret =0
@@ -27,8 +30,8 @@ def arp_icmp_ping():
 
     ans,unans=srp(Ether(dst="ff:ff:ff:ff:ff:ff")/ARP(pdst=gwip),timeout=2)
     ans.summary(lambda (s,r): r.sprintf("%Ether.src% %ARP.psrc%") )
-    #for p in ans : gw_mac = p[1][Ether].src
-    assert(len(ans) != 0)
+    for p in ans : gw_mac = p[1][Ether].src
+    #assert(len(ans) != 0)
 
     ans,unans=sr(IP(dst=gwip)/ICMP(),timeout=2)
     ans.summary(lambda (s,r): r.sprintf("%IP.src% is alive") )
@@ -52,10 +55,10 @@ def ssh_connet(ip,username,passwd):
 
 if __name__ == '__main__':
     print("\033[41;36m|== test uart port ==|\033[0m")
-    #uart_test()
+    uart_test()
 
     print("\033[41;36m|== test arp and icmp gateway ==|\033[0m")
-    #arp_icmp_ping()
+    arp_icmp_ping()
 
     print("\033[41;36m|== test ssh(tcp port 22) ==|\033[0m")
     cf = ConfigParser.ConfigParser()
